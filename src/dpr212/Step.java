@@ -96,14 +96,143 @@ public class Step {
 	}
 	
 	/**
+	 * Moves in a random direction, ensuring that this is not an invalid position
+	 * @param walls
+	 * @return A step object in a random direction from the current step object (or null if the current step
+	 * is surrounded by open spaces or is pinned against the edge
+	 */
+	public Step getNextStepRandDirection(Walls walls) {
+		boolean [] triedThis = new boolean[4]; //This will help me determine whether everything has already been tried or not
+		Direction newDirection = direction;
+		int nextRow = 0;
+		int nextCol = 0;
+		boolean keepGoing = true;
+		boolean successful = true; //Signals whether we successfully generated a new random step or not
+		while (keepGoing == true) {
+			int decide = MazeGenerator.randomInt(1, 4); //A random number from one to 4
+			switch (decide) {
+			case 1:
+				if (triedThis[0] == true) { //If we've done this already, then we shouldn't check it again
+					break; //Stop this
+				} else { //If we've never done this before
+					triedThis[0] = true; //We don't need to repeat this
+				}
+				
+				//if a step NORTH is in-bounds AND if we didn't just come from NORTH
+				if(testStepInDir(NORTH)) {
+					nextRow = row - 1;
+					nextCol = col;
+					newDirection = NORTH;
+					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
+						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
+							keepGoing = false; //If this is not already an open space, then we're good
+						}
+					}
+				}
+				break;
+			case 2:
+				if (triedThis[1] == true) { //If we've done this already, then we shouldn't check it again
+					break; //Stop this
+				} else { //If we've never done this before
+					triedThis[1] = true; //We don't need to repeat this
+				}
+				//if a step WEST is in-bounds AND if we didn't just come from WEST
+				if(testStepInDir(WEST)) {
+					nextRow = row;
+					nextCol = col - 1;
+					newDirection = WEST;
+					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
+						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
+							keepGoing = false; //If this is not already an open space, then we're good
+						}
+					}
+				}
+				break;
+			case 3:
+				if (triedThis[2] == true) { //If we've done this already, then we shouldn't check it again
+					break; //Stop this
+				} else { //If we've never done this before
+					triedThis[2] = true; //We don't need to repeat this
+				}
+				//if a step SOUTH is in-bounds AND if we didn't just come from SOUTH
+				if(testStepInDir(SOUTH)) {
+					nextRow = row + 1;
+					nextCol = col;
+					newDirection = SOUTH;
+					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
+						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
+							keepGoing = false; //If this is not already an open space, then we're good
+						}
+					}
+				}
+				break;
+			default:
+				if (triedThis[3] == true) { //If we've done this already, then we shouldn't check it again
+					break; //Stop this
+				} else { //If we've never done this before
+					triedThis[3] = true; //We don't need to repeat this
+				}
+				//if a step EAST is in-bounds AND if we didn't just come from EAST
+				if(testStepInDir(EAST)) {
+					nextRow = row;
+					nextCol = col + 1;
+					newDirection = EAST;
+					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
+						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
+							keepGoing = false; //If this is not already an open space, then we're good
+						}
+					}
+				}
+				break;
+			}
+			
+			//Check to see if we've tried every available direction
+			for (int i = 0; i < 5; i++) { //Loop 4 times to check each of the 4 items in tryedThis
+				if (triedThis[i] == true) { //If this one has already been tried
+					keepGoing = false; //If all 4 are true, this will stay false
+				} else {
+					keepGoing = true; //We should keep trying if even one is not true
+					successful = false; //We were not successful in generating a step
+					i = 5; //Stop this loop once we've found just one that we've already tried
+				}
+			}
+		}
+		
+		if (successful == true) { //If we successfully generated a step
+			return new Step(nextRow, nextCol, newDirection, dim);
+		} else { //If no step could be generated because the current step is surrounded (or pinned against the edge and surrounded)
+			return null; //We need to signal that we cannot branch further from this step
+		}
+	}
+	
+	/**
+	 * Checks whether a position is in the interior of the maze. e.g. all 0's in the following:
+	 * 1 1 1 1
+	 * 1 0 0 1
+	 * 1 0 0 1
+	 * 1 1 1 1
+	 * @return true if this is in the interior, false if not
+	 */
+	private boolean isInInterior(int newRow, int newCol) {
+		if (1 <= newRow && newRow <= dim-2) { //If the row is in the interior (e.g. 0's in this: 1 0 0 1)
+			if (1 <= newCol && newCol <= dim-2) { //If the col is in the interior (e.g. 0's in below:)
+																						//1
+																						//0
+																						//0
+																						//1
+				return true; //Then this is within the interior
+			}
+		}
+		
+		return false; //Otherwise, this step is not within the interior
+	}
+	
+	/**
 	 * Moves in a random direction.
 	 * @param walls
 	 * @return A step object in a random direction from the current step object
 	 */
 	public Step getNextStepRandDirection() {
-//		if (isGoal()) { //If we are already at a goal
-//			GenerateRunner.die("Error: Attempt to go in a random direction from the goal, " + toString());
-//		}
 		
 		Direction newDirection = direction;
 		int nextRow = 0;
@@ -368,7 +497,55 @@ public class Step {
 			return false; //the row is invalid
 		}
 	}
-
+	
+	/**
+	 * Checks to see if a particular position is in a corner of the maze (may be unnecessary)
+	 * @return
+	 */
+	private boolean isCorner (Walls walls) {
+		/*
+		 * 1 1 1 1
+		 * 1 B 0 1
+		 * 1 0 1 1
+		 * 1 1 1 1
+		 */
+		if (row == 1 && col == 1) {
+			return true;
+		}
+		
+		/*
+		 * 1 1 1 1
+		 * 1 1 0 1
+		 * 1 1 1 1
+		 * 1 1 1 1
+		 */
+		if (row == 1 && col == dim - 1) {
+			return true;
+		}
+		
+		/*
+		 * 1 1 1 1
+		 * 1 1 1 1
+		 * 1 1 0 1
+		 * 1 1 1 1
+		 */
+		if (row == dim-1 && col == dim-1) {
+			return true;
+		}
+		
+		/*
+		 * 1 1 1 1
+		 * 1 1 1 1
+		 * 1 0 1 1
+		 * 1 1 1 1
+		 */
+		if (row == dim-1 && col == 1) {
+			return true;
+		}
+		
+		return false;
+	}
+	
 	/**
 	 * Checks if this step is a goal
 	 * @return

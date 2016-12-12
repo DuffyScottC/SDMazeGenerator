@@ -61,7 +61,17 @@ public class MazeGenerator {
 	 * @param truePath
 	 */
 	private void generateBranches(final ArrayList<Step> truePath) {
-		System.out.println("This is a test.");
+		Step nextStep;
+		for (Step step : truePath) { //We will loop through all of the steps
+			if (step.getIsIntersection() == true) { //If this is a designated intersection
+				nextStep = step.getNextStepRandDirection(walls); //Get a new step in a random direction
+				if (nextStep != null) { //If we successfully generated a step
+					
+				} else { //If nextStep is null (we were unable to step from the last step)
+					
+				}
+			}
+		}
 	}
 	
 	/**
