@@ -142,80 +142,55 @@ public class Step {
 			int decide = MazeGenerator.randomInt(1, 4); //A random number from one to 4
 			switch (decide) {
 			case 1:
-				if (triedThis[0] == true) { //If we've done this already, then we shouldn't check it again
-					break; //Stop this
-				} else { //If we've never done this before
-					triedThis[0] = true; //We don't need to repeat this
-				}
+				triedThis[0] = true; //We don't need to repeat this
 				
 				//if a step NORTH is in-bounds AND if we didn't just come from NORTH
 				if(testStepInDir(NORTH)) {
 					nextRow = row - 1;
 					nextCol = col;
 					newDirection = NORTH;
-					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
-						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
-							if (isAllowed(nextRow, nextCol, walls)) {
-								keepGoing = false; //If this is not already an open space, then we're good
-							}
-						}
-					}
+					
 				}
 				break;
 			case 2:
-				if (triedThis[1] == true) { //If we've done this already, then we shouldn't check it again
-					break; //Stop this
-				} else { //If we've never done this before
-					triedThis[1] = true; //We don't need to repeat this
-				}
+				triedThis[1] = true; //We don't need to repeat this
+				
 				//if a step WEST is in-bounds AND if we didn't just come from WEST
 				if(testStepInDir(WEST)) {
 					nextRow = row;
 					nextCol = col - 1;
 					newDirection = WEST;
-					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
-						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
-							keepGoing = false; //If this is not already an open space, then we're good
-						}
-					}
+					
 				}
 				break;
 			case 3:
-				if (triedThis[2] == true) { //If we've done this already, then we shouldn't check it again
-					break; //Stop this
-				} else { //If we've never done this before
-					triedThis[2] = true; //We don't need to repeat this
-				}
+				triedThis[2] = true; //We don't need to repeat this
 				//if a step SOUTH is in-bounds AND if we didn't just come from SOUTH
 				if(testStepInDir(SOUTH)) {
 					nextRow = row + 1;
 					nextCol = col;
 					newDirection = SOUTH;
-					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
-						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
-							keepGoing = false; //If this is not already an open space, then we're good
-						}
-					}
+					
 				}
 				break;
 			default:
-				if (triedThis[3] == true) { //If we've done this already, then we shouldn't check it again
-					break; //Stop this
-				} else { //If we've never done this before
-					triedThis[3] = true; //We don't need to repeat this
-				}
+				triedThis[3] = true; //We don't need to repeat this
 				//if a step EAST is in-bounds AND if we didn't just come from EAST
 				if(testStepInDir(EAST)) {
 					nextRow = row;
 					nextCol = col + 1;
 					newDirection = EAST;
-					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
-						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
-							keepGoing = false; //If this is not already an open space, then we're good
-						}
-					}
+					
 				}
 				break;
+			}
+			
+			if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
+				if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
+					if (isAllowed(nextRow, nextCol, walls)) {
+						keepGoing = false; //If this is not already an open space, then we're good
+					}
+				}
 			}
 			
 			if (keepGoing == true) { //If we're about to loop again
@@ -236,7 +211,6 @@ public class Step {
 		if (successful == true) { //If we successfully generated a step
 			int decide = MazeGenerator.randomInt(5);
 			if (decide == 1) { //Will be selected as dead end 20% (1/5) of the time
-				System.out.println("chosen dead end");
 				return new Step(nextRow, nextCol, newDirection, dim, true); //This will be the dead end of this row
 			} //Otherwise, will be selected as not the dead end 80% (4/5) of the time
 			return new Step(nextRow, nextCol, newDirection, dim); //
@@ -321,75 +295,6 @@ public class Step {
 		}
 		
 		return new Step(nextRow, nextCol, newDirection, dim);
-	}
-	
-	/**
-	 * 
-	 * 
-	 * 
-	 * 
-	 * DELET ME!!!!!!!!!!!!!!!!!!!!!!!
-	 * 
-	 * 
-	 * 
-	 * 
-	 * 
-	 * Returns a step object that is in a random direction
-	 * @param walls
-	 * @return - step in a random direction, or null if out of bounds
-	 */
-	public Step getNextStepRandDir(final char [][] walls) {
-		Direction newDirection = direction; //Start off as the same direction
-		Step nextStep = new Step(0, 0, direction, dim); //Initialize to a random step
-		
-		//This will continue choosing a random direction until one is selected that is not the direction
-		//we just came from, AND it is not the same direction we are already going
-		while (newDirection == direction) {
-			int decide = MazeGenerator.randomInt(3);
-			switch (decide) {
-			case 0:
-				if (direction != SOUTH) { //if we did not just come from this direction
-					nextStep = getNextStepDir(NORTH); //Get the step in the direction we are trying to go
-					if (nextStep != null) {
-						if (isIsolated(nextStep, walls)) { //If this is an isolated position
-							newDirection = NORTH;
-						}
-					}
-				}
-				break;
-			case 1:
-				if (direction != EAST) { //if we did not just come from this direction
-					nextStep = getNextStepDir(WEST); //Get the step in the direction we are trying to go
-					if (nextStep != null) {
-						if (isIsolated(nextStep, walls)) { //If this is an isolated position
-							newDirection = WEST;
-						}
-					}
-				}
-				break;
-			case 2:
-				if (direction != NORTH) { //if we did not just come from this direction
-					nextStep = getNextStepDir(SOUTH); //Get the step in the direction we are trying to go
-					if (nextStep != null) {
-						if (isIsolated(nextStep, walls)) { //If this is an isolated position
-							newDirection = SOUTH;
-						}
-					}
-				}
-				break;
-			default:
-				if (direction != WEST) { //if we did not just come from this direction
-					nextStep = getNextStepDir(EAST); //Get the step in the direction we are trying to go
-					if (nextStep != null) {
-						if (isIsolated(nextStep, walls)) { //If this is an isolated position
-							newDirection = EAST; //Then we can chose this position
-						}
-					}
-				}
-			}
-		} //Once we get out of the loop, we have a valid direction
-		
-		return nextStep; //Create the step
 	}
 	
 	/**

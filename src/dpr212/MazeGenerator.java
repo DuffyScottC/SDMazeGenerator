@@ -8,10 +8,10 @@ import java.util.Random; //For random number generation
 
 public class MazeGenerator {
 //	private char [][] walls;
+	public static int DEAD = 0;
+	public static int INTER = 0;
 	private Walls walls;
 	private int dim; //The dimensions of the maze
-	private int maxNumOfIntersections; //The maximum number of intersections in the whole maze
-	private int minNumOfIntersections; //The minimum number of intersections in the whole maze
 	private ArrayList<Step> truePath; //This contains the true path through the maze
 	
 	/**
@@ -19,10 +19,6 @@ public class MazeGenerator {
 	 * @param newDim
 	 */
 	public MazeGenerator (int newDim) {
-		//We want to generate at maximum one less than the (total number of interior positions)/2 intersections
-		maxNumOfIntersections = 3;//randomInt(0, dim/2);
-		minNumOfIntersections = 0;
-		
 		if (newDim >= 3) {
 			dim = newDim;
 		} else {
@@ -44,6 +40,8 @@ public class MazeGenerator {
 			int index = randomInt(1, path.size() - 2); //Get a random index, excluding the start and goal positions
 			if ( !(path.get(index).getIsIntersection()) ) { //If this is not already an intersection
 				path.get(index).setIsIntersection(true); //Label this as an intersection
+//				walls.set(path.get(index).getRow(), path.get(index).getCol(), 'X');
+				INTER++;
 				inters--; //One fewer intersection
 			}
 		}
@@ -72,14 +70,12 @@ public class MazeGenerator {
 					keep = nextStep; //Store this in case we generate a "not allowed" step
 					nextStep = nextStep.getNextStepRandDirection(walls); //Get a new step in a random direction
 					if (nextStep != null) { //If we successfully generated a step
-						if (nextStep.isAllowed(walls) == true) { //If this is a valid step
-							walls.set(nextStep.getRow(), nextStep.getCol(), '0');
-							if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
-								keepGoing = false; //We must move to the next intersection
-							}
-						} else { //If the step is not allowed
-							nextStep = keep; //Go back to the last valid step
-						}
+						//Problem: 
+						walls.set(nextStep.getRow(), nextStep.getCol(), '0');
+//						if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
+//							DEAD++;
+//							keepGoing = false; //We must move to the next intersection
+//						}
 					} else { //If nextStep is null (we were unable to step from the last step)
 						keepGoing = false; //We must move to the next intersection
 					}
@@ -176,6 +172,12 @@ public class MazeGenerator {
 		generateTruePath();
 		generateIntersections(truePath);
 		generateBranches();
+		
+		for (Step s : truePath) {
+			if (s.getIsIntersection() == true) {
+				walls.set(s.getRow(), s.getCol(), 'X');
+			}
+		}
 		
 	}
 	
