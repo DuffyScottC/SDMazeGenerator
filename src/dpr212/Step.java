@@ -155,7 +155,9 @@ public class Step {
 					newDirection = NORTH;
 					if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
 						if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
-							keepGoing = false; //If this is not already an open space, then we're good
+							if (isAllowed(nextRow, nextCol, walls)) {
+								keepGoing = false; //If this is not already an open space, then we're good
+							}
 						}
 					}
 				}
@@ -234,6 +236,7 @@ public class Step {
 		if (successful == true) { //If we successfully generated a step
 			int decide = MazeGenerator.randomInt(5);
 			if (decide == 1) { //Will be selected as dead end 20% (1/5) of the time
+				System.out.println("chosen dead end");
 				return new Step(nextRow, nextCol, newDirection, dim, true); //This will be the dead end of this row
 			} //Otherwise, will be selected as not the dead end 80% (4/5) of the time
 			return new Step(nextRow, nextCol, newDirection, dim); //
@@ -435,11 +438,14 @@ public class Step {
 	}
 	
 	/**
-	 * Checks to make sure this new step is allowed meaning:
+	 * (variation for use on coordinates, not a step) Checks to make sure this new step is allowed meaning:
 	 * It does not result in a block of open spaces being formed
+	 * @param nextRow
+	 * @param nextCol
+	 * @param walls
 	 * @return True if this step is allowed, false if not
 	 */
-	public boolean isAllowed(final Walls walls) {
+	public boolean isAllowed(int nextRow, int nextCol, Walls walls) {
 		/*
 		 * Reference
 		 * row: up=(-1) down=(+1)
@@ -452,9 +458,9 @@ public class Step {
 		 * 1 B 0
 		 * 1 1 1
 		 */
-		if (isOpen(row-1,col, walls)) {
-			if (isOpen(row,col+1, walls)) {
-				if (isOpen(row-1,col+1, walls)) {
+		if (isOpen(nextRow-1,nextCol, walls)) {
+			if (isOpen(nextRow,nextCol+1, walls)) {
+				if (isOpen(nextRow-1,nextCol+1, walls)) {
 					return false;
 				}
 			}
@@ -466,9 +472,9 @@ public class Step {
 		 * 0 B 1
 		 * 1 1 1
 		 */
-		if (isOpen(row-1,col, walls)) {
-			if (isOpen(row,col-1, walls)) {
-				if (isOpen(row-1,col-1, walls)) {
+		if (isOpen(nextRow-1,nextCol, walls)) {
+			if (isOpen(nextRow,nextCol-1, walls)) {
+				if (isOpen(nextRow-1,nextCol-1, walls)) {
 					return false;
 				}
 			}
@@ -480,9 +486,9 @@ public class Step {
 		 * 0 B 1
 		 * 0 0 1
 		 */
-		if (isOpen(row+1,col, walls)) {
-			if (isOpen(row,col-1, walls)) {
-				if (isOpen(row+1,col-1, walls)) {
+		if (isOpen(nextRow+1,nextCol, walls)) {
+			if (isOpen(nextRow,nextCol-1, walls)) {
+				if (isOpen(nextRow+1,nextCol-1, walls)) {
 					return false;
 				}
 			}
@@ -494,14 +500,23 @@ public class Step {
 		 * 1 B 0
 		 * 1 0 0
 		 */
-		if (isOpen(row+1,col, walls)) {
-			if (isOpen(row,col+1, walls)) {
-				if (isOpen(row+1,col+1, walls)) {
+		if (isOpen(nextRow+1,nextCol, walls)) {
+			if (isOpen(nextRow,nextCol+1, walls)) {
+				if (isOpen(nextRow+1,nextCol+1, walls)) {
 					return false;
 				}
 			}
 		}
 		return true;
+	}
+	
+	/**
+	 * Checks to make sure this new step is allowed meaning:
+	 * It does not result in a block of open spaces being formed
+	 * @return True if this step is allowed, false if not
+	 */
+	public boolean isAllowed(final Walls walls) {
+		return isAllowed(row, col, walls);
 	}
 	
 	public boolean isOpen(int newRow, int newCol, final Walls walls) {
