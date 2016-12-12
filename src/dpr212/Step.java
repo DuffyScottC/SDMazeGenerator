@@ -631,4 +631,8 @@ public class Step {
 	public void setIsIntersection(boolean newIsIntersection) {
 		isIntersection = newIsIntersection;
 	}
+
+	public boolean getIsDeadEnd() {
+		return isDeadEnd;
+	}
 }
