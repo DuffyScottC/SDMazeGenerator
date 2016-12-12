@@ -13,12 +13,38 @@ public class Step {
 	private int dim;
 	private Direction direction;
 	private boolean isIntersection;
+	private boolean isDeadEnd;
 	
+	/**
+	 * Create a new step object with specified row, col, direction, and dim
+	 * @param nRow
+	 * @param nCol
+	 * @param nDirection
+	 * @param nDim
+	 */
 	public Step(int nRow, int nCol, Direction nDirection, int nDim) {
 		row = nRow;
 		col = nCol;
 		direction = nDirection;
 		isIntersection = false;
+		isDeadEnd = false;
+		dim = nDim;
+	}
+	
+	/**
+	 * Create a new Step object with specified isDeadEnd
+	 * @param nRow
+	 * @param nCol
+	 * @param nDirection
+	 * @param nDim
+	 * @param nIsDeadEnd
+	 */
+	public Step(int nRow, int nCol, Direction nDirection, int nDim, boolean nIsDeadEnd) {
+		row = nRow;
+		col = nCol;
+		direction = nDirection;
+		isIntersection = false;
+		isDeadEnd = nIsDeadEnd;
 		dim = nDim;
 	}
 	
@@ -206,7 +232,11 @@ public class Step {
 		}
 		
 		if (successful == true) { //If we successfully generated a step
-			return new Step(nextRow, nextCol, newDirection, dim);
+			int decide = MazeGenerator.randomInt(5);
+			if (decide == 1) { //Will be selected as dead end 20% (1/5) of the time
+				return new Step(nextRow, nextCol, newDirection, dim, true); //This will be the dead end of this row
+			} //Otherwise, will be selected as not the dead end 80% (4/5) of the time
+			return new Step(nextRow, nextCol, newDirection, dim); //
 		} else { //If no step could be generated because the current step is surrounded (or pinned against the edge and surrounded)
 			return null; //We need to signal that we cannot branch further from this step
 		}
