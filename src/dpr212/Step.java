@@ -103,6 +103,10 @@ public class Step {
 	 */
 	public Step getNextStepRandDirection(Walls walls) {
 		boolean [] triedThis = new boolean[4]; //This will help me determine whether everything has already been tried or not
+		for (int i = 0; i < 4; i++) { //Initialize all the elements as false to begin with
+			triedThis[i] = false;
+		}
+		
 		Direction newDirection = direction;
 		int nextRow = 0;
 		int nextCol = 0;
@@ -186,14 +190,17 @@ public class Step {
 				break;
 			}
 			
-			//Check to see if we've tried every available direction
-			for (int i = 0; i < 5; i++) { //Loop 4 times to check each of the 4 items in tryedThis
-				if (triedThis[i] == true) { //If this one has already been tried
-					keepGoing = false; //If all 4 are true, this will stay false
-				} else {
-					keepGoing = true; //We should keep trying if even one is not true
-					successful = false; //We were not successful in generating a step
-					i = 5; //Stop this loop once we've found just one that we've already tried
+			if (keepGoing == true) { //If we're about to loop again
+				//Check to see if we've tried every available direction
+				for (int i = 0; i < 4; i++) { //Loop 4 times to check each of the 4 items in tryedThis
+					if (triedThis[i] == true) { //If this one has already been tried
+						keepGoing = false; //If all 4 are true, this will stay false
+						successful = false; //We were not successful in generating a step
+					} else {
+						keepGoing = true; //We should keep trying if even one is not true
+						successful = true; //Until otherwise stated, we are successful in generating a step
+						i = 5; //Stop this loop once we've found just one that we've already tried
+					}
 				}
 			}
 		}
@@ -575,7 +582,12 @@ public class Step {
 	
 	@Override
 	public String toString() {
-		return "(" + row + ", " + col + ", " + direction + ")";
+		String s = "(" + row + ", " + col + ", " + direction;
+		if (isIntersection == true) {
+			s += ", intersection";
+		}
+		s += ")";
+		return s;
 	}
 
 	public Direction getDirecion() {

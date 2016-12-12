@@ -60,15 +60,21 @@ public class MazeGenerator {
 	 * Generates branches from intersections of a given element
 	 * @param truePath
 	 */
-	private void generateBranches(final ArrayList<Step> truePath) {
+	private void generateBranches() {
 		Step nextStep;
-		for (Step step : truePath) { //We will loop through all of the steps
+//		Step keep; //Used for remembering the last valid step (in case we generate a non-valid step)
+		
+		for (Step step : truePath) { //We will loop through all of the steps of the true path
 			if (step.getIsIntersection() == true) { //If this is a designated intersection
-				nextStep = step.getNextStepRandDirection(walls); //Get a new step in a random direction
-				if (nextStep != null) { //If we successfully generated a step
-					
-				} else { //If nextStep is null (we were unable to step from the last step)
-					
+				boolean keepGoing = true;
+				nextStep = step; //Initialize nextStep
+				while (keepGoing == true) { //This loop generates a new branch for a given step
+					nextStep = nextStep.getNextStepRandDirection(walls); //Get a new step in a random direction
+					if (nextStep != null) { //If we successfully generated a step
+						walls.set(nextStep.getRow(), nextStep.getCol(), '0');
+					} else { //If nextStep is null (we were unable to step from the last step)
+						keepGoing = false; //We must move to the next intersection
+					}
 				}
 			}
 		}
@@ -161,6 +167,7 @@ public class MazeGenerator {
 		 */
 		generateTruePath();
 		generateIntersections(truePath);
+		generateBranches();
 		
 	}
 	
