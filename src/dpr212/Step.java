@@ -209,10 +209,10 @@ public class Step {
 		}
 		
 		if (successful == true) { //If we successfully generated a step
-			int decide = MazeGenerator.randomInt(5);
-			if (decide == 1) { //Will be selected as dead end 20% (1/5) of the time
+			int decide = MazeGenerator.randomInt(6);
+			if (decide == 1) { //Will be selected as dead end (1/6) of the time
 				return new Step(nextRow, nextCol, newDirection, dim, true); //This will be the dead end of this row
-			} //Otherwise, will be selected as not the dead end 80% (4/5) of the time
+			} //Otherwise, will be selected as not the dead end (5/6) of the time
 			return new Step(nextRow, nextCol, newDirection, dim); //
 		} else { //If no step could be generated because the current step is surrounded (or pinned against the edge and surrounded)
 			return null; //We need to signal that we cannot branch further from this step

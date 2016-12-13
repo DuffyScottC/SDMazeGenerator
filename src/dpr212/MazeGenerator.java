@@ -33,7 +33,7 @@ public class MazeGenerator {
 	 * @param path
 	 */
 	public void generateIntersections(final ArrayList<Step> path) {
-		int inters = randomInt(0, path.size() - 2); //A random number from 0 to 2 less than the path size
+		int inters = randomInt(1, path.size() - 2); //A random number from 0 to 2 less than the path size
 							 //(the minus two happens because the start and goal cannot be intersections)
 		
 		while (inters > 0 ) {
@@ -58,16 +58,16 @@ public class MazeGenerator {
 	 * Generates branches from intersections of a given element
 	 * @param truePath
 	 */
-	private void generateBranches() {
+	private void generateBranches(ArrayList<Step> path) {
 		Step nextStep;
-		Step keep; //Used for remembering the last valid step (in case we generate a non-valid step)
+//		Step keep; //Used for remembering the last valid step (in case we generate a non-valid step)
 		
-		for (Step step : truePath) { //We will loop through all of the steps of the true path
+		for (Step step : path) { //We will loop through all of the steps of the true path
 			if (step.getIsIntersection() == true) { //If this is a designated intersection
 				boolean keepGoing = true;
 				nextStep = step; //Initialize nextStep
 				while (keepGoing == true) { //This loop generates a new branch for a given step
-					keep = nextStep; //Store this in case we generate a "not allowed" step
+//					keep = nextStep; //Store this in case we generate a "not allowed" step
 					nextStep = nextStep.getNextStepRandDirection(walls); //Get a new step in a random direction
 					if (nextStep != null) { //If we successfully generated a step
 						//Problem: 
@@ -171,11 +171,15 @@ public class MazeGenerator {
 		 */
 		generateTruePath();
 		generateIntersections(truePath);
-		generateBranches();
+		generateBranches(truePath);
 		
+		//For debugging
 		for (Step s : truePath) {
 			if (s.getIsIntersection() == true) {
 				walls.set(s.getRow(), s.getCol(), 'X');
+			}
+			if (s.getIsDeadEnd() == true) {
+				walls.set(s.getRow(), s.getCol(), 'D');
 			}
 		}
 		
