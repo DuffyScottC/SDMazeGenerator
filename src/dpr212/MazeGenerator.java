@@ -88,6 +88,31 @@ public class MazeGenerator {
 	}
 	
 	/**
+	 * Generate a branch from a specified step object (usually an intersection)
+	 * @param intersectionStep - The intersection we plan on branching from
+	 * @return An ArrayList of steps that make up the branch
+	 */
+	private ArrayList<Step> generateBranch(Step intersectionStep) {
+		ArrayList<Step> branchPath = new ArrayList<Step>();
+		boolean keepGoing = true; //Decides when to end the loop
+		Step nextStep = intersectionStep; //Initialize nextStep
+		while (keepGoing == true) { //This loop generates a new branch for a given step
+			nextStep = nextStep.getNextStepRandDirection(walls); //Get a new step in a random direction
+			if (nextStep != null) { //If we successfully generated a step
+				walls.set(nextStep.getRow(), nextStep.getCol(), '0');
+				branchPath.add(nextStep); //Add this step to the path of the branch
+				if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
+					DEAD++; //For debugging
+					keepGoing = false; //We must move to the next intersection
+				}
+			} else { //If nextStep is null (we were unable to step from the last step)
+				keepGoing = false; //We must move to the next intersection
+			}
+		}
+		return branchPath; //An ArrayList of steps that make up the new branch.
+	}
+	
+	/**
 	 * Generate the first true path through the maze.
 	 */
 	public void generateTruePath() {
@@ -174,10 +199,9 @@ public class MazeGenerator {
 		 */
 		generateTruePath();
 		int truePathIntersections = generateIntersections(truePath);
-//		for (int i = 0; i < truePathIntersections; i++) { //
-//			generateBranches(truePath);
-//		}
-		generateBranches(truePath);
+		for (int i = 0; i < truePathIntersections; i++) { //
+			generateBranches(truePath);
+		}
 		
 		//For debugging
 		for (Step s : truePath) {
