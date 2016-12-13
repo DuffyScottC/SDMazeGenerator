@@ -163,7 +163,7 @@ public class MazeGenerator {
 	}
 	
 	/**
-	 * Overloaded method so that you only have to specify the upper bound of the maze
+	 * Overloaded method so that you only have to specify the upper bound of the random number
 	 * @param high - The highest you want the number to be
 	 * @return - A random number from 0 to high, inclusive.
 	 */
