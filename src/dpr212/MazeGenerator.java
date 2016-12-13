@@ -32,9 +32,10 @@ public class MazeGenerator {
 	 * Marks a random number of intersections on the given path
 	 * @param path
 	 */
-	public void generateIntersections(final ArrayList<Step> path) {
+	public int generateIntersections(final ArrayList<Step> path) {
 		int inters = randomInt(1, path.size() - 2); //A random number from 0 to 2 less than the path size
 							 //(the minus two happens because the start and goal cannot be intersections)
+		int numOfInters = inters; //This one is used to return how many intersections the given path argument has
 		
 		while (inters > 0 ) {
 			int index = randomInt(1, path.size() - 2); //Get a random index, excluding the start and goal positions
@@ -45,6 +46,8 @@ public class MazeGenerator {
 				inters--; //One fewer intersection
 			}
 		}
+		
+		return numOfInters;
 		
 		//for debugging
 //		for (Step step : path) {
@@ -72,10 +75,10 @@ public class MazeGenerator {
 					if (nextStep != null) { //If we successfully generated a step
 						//Problem: 
 						walls.set(nextStep.getRow(), nextStep.getCol(), '0');
-//						if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
-//							DEAD++;
-//							keepGoing = false; //We must move to the next intersection
-//						}
+						if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
+							DEAD++;
+							keepGoing = false; //We must move to the next intersection
+						}
 					} else { //If nextStep is null (we were unable to step from the last step)
 						keepGoing = false; //We must move to the next intersection
 					}
@@ -170,16 +173,16 @@ public class MazeGenerator {
 		 * 2. Have good branches
 		 */
 		generateTruePath();
-		generateIntersections(truePath);
+		int truePathIntersections = generateIntersections(truePath);
+//		for (int i = 0; i < truePathIntersections; i++) { //
+//			generateBranches(truePath);
+//		}
 		generateBranches(truePath);
 		
 		//For debugging
 		for (Step s : truePath) {
 			if (s.getIsIntersection() == true) {
 				walls.set(s.getRow(), s.getCol(), 'X');
-			}
-			if (s.getIsDeadEnd() == true) {
-				walls.set(s.getRow(), s.getCol(), 'D');
 			}
 		}
 		

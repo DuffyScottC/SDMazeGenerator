@@ -5,7 +5,7 @@ public class GenerateRunner {
 //		for (int i = 0; i < 50; i++) {
 //			System.out.println(MazeGenerator.randomInt(3, 6));
 //		}
-		MazeGenerator m = new MazeGenerator(20);
+		MazeGenerator m = new MazeGenerator(12);
 		m.generateSpaces();
 		MazePrinter.printOriginalMaze(m.getDim(), m.getWalls());
 		System.out.println("Dead ends selected: " + MazeGenerator.DEAD);
