@@ -188,7 +188,9 @@ public class Step {
 			if (isInInterior(nextRow, nextCol) == true) { //If this is in the interior of the maze
 				if (walls.get(nextRow, nextCol) != '0') { //If this is not already an open space
 					if (isAllowed(nextRow, nextCol, walls)) {
-						keepGoing = false; //If this is not already an open space, then we're good
+						if ( !(willFormInfiniteLoop(nextRow, nextCol, walls)) ) { //If this space will not form an infinite loop
+							keepGoing = false; //If this is not already an open space, then we're good
+						}
 					}
 				}
 			}
@@ -219,6 +221,74 @@ public class Step {
 		}
 	}
 	
+	/**
+	 * Checks to see if a particular position in the maze will form an infinite loop. For example, B in the following will form an infinite loop:<br>
+	 * 1 1 1 1 1<br>
+	 * 1 0 0 0 1<br>
+	 * 1 0 1 B 1<br>
+	 * 0 0 0 0 0<br>
+	 * 1 1 1 1 1<br>
+	 * 
+	 * @param nextRow
+	 * @param nextCol
+	 * @param walls
+	 * @return true if this position being open would cause and infinite loop, false if not
+	 */
+	private boolean willFormInfiniteLoop(int nextRow, int nextCol, Walls walls) {
+		//In the following, B=(nextRow, nextCol) and C=(The position we would be linking to)
+		int count = 0; //We have to make sure we're not making a link between two open spaces. If count is >= 2 by the end, this will form an infinite loop
+		
+		/*
+		 * 1 1 1 1 1
+		 * 1 0 0 0 1
+		 * 1 0 1 B 1
+		 * 1 0 0 C 1
+		 * 1 1 1 1 1
+		 */
+		if (walls.get(nextRow+1, nextCol) == '0') {
+			count++;
+		}
+		
+		/*
+		 * 1 1 1 1 1
+		 * 1 0 B C 1
+		 * 1 0 1 0 1
+		 * 1 0 0 0 1
+		 * 1 1 1 1 1
+		 */
+		if (walls.get(nextRow, nextCol+1) == '0') {
+			count++;
+		}
+		
+		/*
+		 * 1 1 1 1 1
+		 * 1 C B 0 1
+		 * 1 0 1 0 1
+		 * 1 0 0 0 1
+		 * 1 1 1 1 1
+		 */
+		if (walls.get(nextRow, nextCol-1) == '0') {
+			count++;
+		}
+		
+		/*
+		 * 1 1 1 1 1
+		 * 1 0 0 0 1
+		 * 1 C 1 0 1
+		 * 1 B 0 0 1
+		 * 1 1 1 1 1
+		 */
+		if (walls.get(nextRow-1, nextCol) == '0') {
+			count++;
+		}
+
+		if (count >= 2) { //If there are two or more directly adjacent open positions
+			return true; //This will form an infinite loop
+		} else { //Otherwise, there is only one adjacent open position (the one we came from)
+			return false; //This will not form an infinite loop
+		}
+	}
+
 	/**
 	 * Checks whether a position is in the interior of the maze. e.g. all 0's in the following:
 	 * 1 1 1 1

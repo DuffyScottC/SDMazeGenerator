@@ -186,11 +186,11 @@ public class MazeGenerator {
 		}
 		
 		//For debugging
-		for (Step s : truePath) {
-			if (s.getIsIntersection() == true) {
-				walls.set(s.getRow(), s.getCol(), 'X');
-			}
-		}
+//		for (Step s : truePath) {
+//			if (s.getIsIntersection() == true) {
+//				walls.set(s.getRow(), s.getCol(), 'X');
+//			}
+//		}
 		
 	}
 	
