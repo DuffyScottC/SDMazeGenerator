@@ -62,27 +62,9 @@ public class MazeGenerator {
 	 * @param truePath
 	 */
 	private void generateBranches(ArrayList<Step> path) {
-		Step nextStep;
-//		Step keep; //Used for remembering the last valid step (in case we generate a non-valid step)
-		
 		for (Step step : path) { //We will loop through all of the steps of the true path
 			if (step.getIsIntersection() == true) { //If this is a designated intersection
-				boolean keepGoing = true;
-				nextStep = step; //Initialize nextStep
-				while (keepGoing == true) { //This loop generates a new branch for a given step
-//					keep = nextStep; //Store this in case we generate a "not allowed" step
-					nextStep = nextStep.getNextStepRandDirection(walls); //Get a new step in a random direction
-					if (nextStep != null) { //If we successfully generated a step
-						//Problem: 
-						walls.set(nextStep.getRow(), nextStep.getCol(), '0');
-						if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
-							DEAD++;
-							keepGoing = false; //We must move to the next intersection
-						}
-					} else { //If nextStep is null (we were unable to step from the last step)
-						keepGoing = false; //We must move to the next intersection
-					}
-				}
+				generateBranch(step);
 			}
 		}
 	}
