@@ -57,8 +57,7 @@ public class MazeGenerator {
 	 */
 	public int generateBranchIntersections(final ArrayList<Step> path) {
 //		if (path.size() >= 4) { // If there are at least 4 steps in the path
-			int inters = randomInt(0, path.size()-1); // A random number from 0 to 2 less than the path size
-			// (the minus two happens because the start and goal cannot be intersections)
+			int inters = randomInt(1, path.size()-1); // A random number of intersections
 			int numOfInters = inters; // This one is used to return how many intersections the given path argument has
 			
 			while (inters > 0) {
@@ -66,6 +65,7 @@ public class MazeGenerator {
 				if (index >= path.size()) {
 					System.out.print("");
 				}
+				System.out.println("Index: " + index);
 				if (!(path.get(index).getIsIntersection())) { // If this is not already an intersection
 					path.get(index).setIsIntersection(true); // Label this as an intersection
 					// walls.set(path.get(index).getRow(),
@@ -90,13 +90,6 @@ public class MazeGenerator {
 //				
 //			}
 //		}
-
-		// for debugging
-		// for (Step step : path) {
-		// if (step.getIsIntersection() == true) {
-		// walls.set(step.getRow(), step.getCol(), 'X');
-		// }
-		// }
 	}
 	
 	/**
@@ -125,13 +118,16 @@ public class MazeGenerator {
 			if (nextStep != null) { //If we successfully generated a step
 				walls.set(nextStep.getRow(), nextStep.getCol(), '0');
 				branchPath.add(nextStep); //Add this step to the path of the branch
-				if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
-					DEAD++; //For debugging
-					keepGoing = false; //We must move to the next intersection
-				}
+//				if (nextStep.getIsDeadEnd() == true) { //If this is a dead end
+//					DEAD++; //For debugging
+//					keepGoing = false; //We must move to the next intersection
+//				}
 			} else { //If nextStep is null (we were unable to step from the last step)
 				keepGoing = false; //We must move to the next intersection
 			}
+		}
+		if (branchPath.size() == 0) {
+			System.out.print("");
 		}
 		return branchPath; //An ArrayList of steps that make up the new branch.
 	}
@@ -226,8 +222,11 @@ public class MazeGenerator {
 		for (Step s : truePath) {
 			if (s.getIsIntersection() == true) {
 				ArrayList<Step> branch = generateBranch(s); //Get a new branch from the truePath intersection
-				generateBranchIntersections(branch); //Generate intersections on the new branch
-				generateBranches(branch); //Generate more branches for each branch
+				System.out.println("Branchsize: " + branch.size());
+				if (branch.size() > 0) { //If this is not an empty branch
+					generateBranchIntersections(branch); //Generate intersections on the new branch
+					generateBranches(branch); //Generate more branches for each branch
+				} //Otherwise, somehow we were unable to generate a branch of any size greater than 0, so we should skip over this one.
 			}
 		}
 		
