@@ -28,37 +28,79 @@ public class MazeGenerator {
 		walls = new Walls(newDim);
 	}
 	
-	/**
-	 * Marks a random number of intersections on the given path
-	 * @param path
-	 */
-	public int generateIntersections(final ArrayList<Step> path) {
-		int inters = randomInt(1, path.size() - 2); //A random number from 0 to 2 less than the path size
-							 //(the minus two happens because the start and goal cannot be intersections)
-		int numOfInters = inters; //This one is used to return how many intersections the given path argument has
-		
-		while (inters > 0 ) {
-			int index = randomInt(1, path.size() - 2); //Get a random index, excluding the start and goal positions
-			if ( !(path.get(index).getIsIntersection()) ) { //If this is not already an intersection
-				path.get(index).setIsIntersection(true); //Label this as an intersection
-//				walls.set(path.get(index).getRow(), path.get(index).getCol(), 'X');
+	public int generateTruePathIntersections(final ArrayList<Step> path) {
+		int inters = randomInt(1, path.size() - 2); // A random number from 0 to 2 less than the path size
+		// (the minus two happens because the start and goal cannot be intersections)
+		int numOfInters = inters; // This one is used to return how many intersections the given path argument has
+
+		while (inters > 0) {
+			int index = randomInt(1, path.size() - 2); // Get a random index, excluding the start and goal positions
+			if (index >= path.size()) {
+				System.out.print("");
+			}
+			if (!(path.get(index).getIsIntersection())) { // If this is not already an intersection
+				path.get(index).setIsIntersection(true); // Label this as an intersection
+				// walls.set(path.get(index).getRow(),
+				// path.get(index).getCol(), 'X');
 				INTER++;
-				inters--; //One fewer intersection
+				inters--; // One fewer intersection
 			}
 		}
-		
+
 		return numOfInters;
-		
-		//for debugging
-//		for (Step step : path) {
-//			if (step.getIsIntersection() == true) {
-//				walls.set(step.getRow(), step.getCol(), 'X');
-//			}
-//		}
 	}
 	
 	/**
-	 * Generates branches from intersections of a given element
+	 * Marks a random number of intersections on the given path
+	 * @param path
+	 * @return The number of intersections generated (0 if there are no intersections generated)
+	 */
+	public int generateBranchIntersections(final ArrayList<Step> path) {
+//		if (path.size() >= 4) { // If there are at least 4 steps in the path
+			int inters = randomInt(0, path.size()-1); // A random number from 0 to 2 less than the path size
+			// (the minus two happens because the start and goal cannot be intersections)
+			int numOfInters = inters; // This one is used to return how many intersections the given path argument has
+			
+			while (inters > 0) {
+				int index = randomInt(0, path.size() - 1); // Get a random index, excluding the start and goal positions
+				if (index >= path.size()) {
+					System.out.print("");
+				}
+				if (!(path.get(index).getIsIntersection())) { // If this is not already an intersection
+					path.get(index).setIsIntersection(true); // Label this as an intersection
+					// walls.set(path.get(index).getRow(),
+					// path.get(index).getCol(), 'X');
+					inters--; // One fewer intersection
+				}
+			}
+			
+			return numOfInters;
+//		} else { // If there are 3 or fewer steps in the path
+//			if (path.size() == 0) { // If there are no steps in the path
+//				return 0; // Return 0 (no intersections)
+//			} else if (path.size() == 1) { // if there is only one step in the path
+//				int decide = randomInt(0, 1); // Get a random in from 0 to 1 to decide whether this should be an intersection or not
+//				if (decide == 0) { // If this should not be an intersection
+//					return 0;
+//				} else { // If this should be an intersection
+//					path.get(0).setIsIntersection(true); // Label the only step in the path as an intersection
+//					return 1;
+//				}
+//			} else if (path.size() == 2) { //If the branch has only two steps
+//				
+//			}
+//		}
+
+		// for debugging
+		// for (Step step : path) {
+		// if (step.getIsIntersection() == true) {
+		// walls.set(step.getRow(), step.getCol(), 'X');
+		// }
+		// }
+	}
+	
+	/**
+	 * Generates branches for each intersections of a given path (array list of steps)
 	 * @param truePath
 	 */
 	private void generateBranches(ArrayList<Step> path) {
@@ -180,9 +222,16 @@ public class MazeGenerator {
 		 * 2. Have good branches
 		 */
 		generateTruePath();
-		int truePathIntersections = generateIntersections(truePath);
-		for (int i = 0; i < truePathIntersections; i++) { //
-			generateBranches(truePath);
+		int truePathIntersections = generateTruePathIntersections(truePath);
+		for (Step s : truePath) {
+			if (s.getIsIntersection() == true) {
+				ArrayList<Step> branch = generateBranch(s); //Get a new branch from the truePath intersection
+				if (branch.size() == 0) {
+					System.out.print(""); //Problem: generateBranch is generating empty branches
+				}
+				generateBranchIntersections(branch); //Generate intersections on the new branch
+				generateBranches(branch); //Generate more branches for each branch
+			}
 		}
 		
 		//For debugging

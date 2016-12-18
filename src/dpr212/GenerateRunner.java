@@ -10,6 +10,7 @@ public class GenerateRunner {
 		MazePrinter.printOriginalMaze(m.getDim(), m.getWalls());
 		System.out.println("Dead ends selected: " + MazeGenerator.DEAD);
 		System.out.println("Intersections created: " + MazeGenerator.INTER);
+		//note to self: may need "read -p 'Press enter to close...'" at the end of run.command file (or whatever I've called it)
 	}
 	
 	public static void die(String message) {
