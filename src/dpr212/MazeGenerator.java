@@ -226,9 +226,6 @@ public class MazeGenerator {
 		for (Step s : truePath) {
 			if (s.getIsIntersection() == true) {
 				ArrayList<Step> branch = generateBranch(s); //Get a new branch from the truePath intersection
-				if (branch.size() == 0) {
-					System.out.print(""); //Problem: generateBranch is generating empty branches
-				}
 				generateBranchIntersections(branch); //Generate intersections on the new branch
 				generateBranches(branch); //Generate more branches for each branch
 			}
